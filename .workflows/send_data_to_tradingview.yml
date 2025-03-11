@@ -2,7 +2,7 @@ name: Fetch Bithumb Data and Send to TradingView Webhook
 
 on:
   schedule:
-    - cron: "*/5 * * * *"  # 5분마다 실행
+    - cron: "*/1 * * * *"  # 5분마다 실행
   workflow_dispatch:  # 수동 실행을 위한 옵션
 
 jobs:
