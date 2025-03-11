@@ -1,2 +1,5 @@
 fastapi
 uvicorn
+
+echo "fastapi" > requirements.txt
+echo "uvicorn" >> requirements.txt
