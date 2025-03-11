@@ -1,0 +1,24 @@
+name: Fetch Bithumb Data and Send to TradingView Webhook
+
+on:
+  schedule:
+    - cron: "*/60 * * * *"  # 5분마다 실행
+  workflow_dispatch:  # 수동 실행을 위한 옵션
+
+jobs:
+  send_data_to_tradingview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Fetch data from Bithumb API
+        run: |
+          curl -s https://gw.bithumb.com/exchange/v1/trade/accumulation/deposit/C0100-C0100 \
+          | jq '.data' > bithumb_data.json
+
+      - name: Send data to TradingView Webhook
+        run: |
+          curl -X POST ${{ secrets.TRADINGVIEW_WEBHOOK_URL }} \
+          -H "Content-Type: application/json" \
+          -d @bithumb_data.json
