@@ -14,3 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN mkdir -p /app/data
 
 # Gunicorn을
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5001", "app:app"]
