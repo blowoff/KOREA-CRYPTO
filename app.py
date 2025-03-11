@@ -1,41 +1,27 @@
 from flask import Flask, request, jsonify
 import json
-import os
 
 app = Flask(__name__)
 
-DATA_FILE = "bithumb_krw.json"
+# 🔹 최신 데이터 저장 (메모리 변수)
+latest_data = {"balance": None, "timestamp": None}
 
 @app.route('/webhook', methods=['POST'])
-def receive_webhook():
+def webhook():
+    """트레이딩뷰 웹훅에서 데이터를 받아 저장하는 엔드포인트"""
+    global latest_data
     try:
-        data = request.json  # JSON 데이터 받기
-        if not data or "balance" not in data:
-            return jsonify({"error": "Invalid data"}), 400
-
-        # 최신 데이터 저장
-        with open(DATA_FILE, "w") as f:
-            json.dump(data, f)
-
-        return jsonify({"message": "Data received successfully"}), 200
+        data = request.json
+        latest_data["balance"] = data.get("balance", 0)
+        latest_data["timestamp"] = data.get("timestamp", 0)
+        return jsonify({"status": "success", "message": "Data received"}), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"status": "error", "message": str(e)}), 400
 
-@app.route('/data/bithumb_krw')
+@app.route('/data/bithumb_krw', methods=['GET'])
 def get_data():
-    if not os.path.exists(DATA_FILE):
-        return jsonify({"error": "No data available"}), 404
-
-    with open(DATA_FILE, "r") as f:
-        data = json.load(f)
-
-    return jsonify({
-        "s": "ok",
-        "d": [
-            data["timestamp"],  # 시간
-            data["balance"],  # 빗썸 원화 보유량
-        ]
-    })
+    """저장된 최신 데이터를 반환하는 엔드포인트"""
+    return jsonify(latest_data)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host="0.0.0.0", port=5001)
