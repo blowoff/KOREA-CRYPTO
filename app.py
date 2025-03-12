@@ -39,6 +39,9 @@ def get_json():
     else:
         return jsonify({"error": "JSON 파일이 존재하지 않습니다."}), 404
 
+@app.route('/')
+def home():
+    return jsonify({"message": "KOREA-CRYPTO API is running!"})
 
 # ✅ Flask 서버 실행
 if __name__ == '__main__':
